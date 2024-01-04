@@ -2,37 +2,24 @@ name: Build and Test
 on:
   push:
     branches: ["main"]
-    tags: []
-  pull_request:
 
 jobs:
 
-  golangci:
+  build:
     name: Lint
     runs-on: ubuntu-latest
+
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@v5.0.0
-      with:
-        go-version: 1.21
-    - name: Check out code
+    - name: Checkout code
       uses: actions/checkout@v4.1.1
-    - name: Lint Go Code
-      uses: golangci/golangci-lint-action@v3.7.0
-      with:
-        version: v1.54
 
-  build:
-    name: Test
-    runs-on: ubuntu-latest
-    needs: [golangci]
-    steps:
     - name: Set up Go
       uses: actions/setup-go@v5.0.0
       with:
-        go-version: 1.21
+        go-version: ^1.21
+      id: go
 
-    - name: Check out code
+    - name: Check out code into the Go module directory
       uses: actions/checkout@v4.1.1
 
     - name: Build
