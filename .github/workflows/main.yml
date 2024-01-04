@@ -12,13 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Go
-      uses: action/setup-go@v3
+      uses: actions/setup-go@v5.0.0
       with:
         go-version: 1.21
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4.1.1
     - name: Lint Go Code
-      uses: golangci/golangci-lint-action@v3
+      uses: golangci/golangci-lint-action@v3.7.0
+      with:
+        version: v1.54
 
   build:
     name: Test
@@ -26,12 +28,12 @@ jobs:
     needs: [golangci]
     steps:
     - name: Set up Go
-      uses: action/setup-go@v3
+      uses: actions/setup-go@v5.0.0
       with:
         go-version: 1.21
 
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4.1.1
 
     - name: Build
       uses: go build -v ./...
