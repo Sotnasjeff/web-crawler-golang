@@ -4,19 +4,24 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 
+	"github.com/Sotnasjeff/web-crawler-golang/db"
 	"golang.org/x/net/html"
 )
 
 var (
-	links   []string
 	visited map[string]bool = map[string]bool{}
 )
 
 func main() {
 	visitLink("https://google.com.br")
+}
 
-	fmt.Println(len(links))
+type VisitedLink struct {
+	Website     string    `bson:"website"`
+	Link        string    `bson:"linke"`
+	VisitedDate time.Time `bson:"visited_date"`
 }
 
 func visitLink(url string) {
@@ -50,11 +55,20 @@ func extractLinks(node *html.Node) {
 			if att.Key != "href" {
 				continue
 			}
+
 			link, err := url.Parse(att.Val)
+
 			if err != nil || link.Scheme == "" {
 				continue
 			}
-			links = append(links, link.String())
+
+			visitedLink := VisitedLink{
+				Website:     link.Host,
+				Link:        link.String(),
+				VisitedDate: time.Now(),
+			}
+
+			db.Insert("links", visitedLink)
 
 			visitLink(link.String())
 		}
