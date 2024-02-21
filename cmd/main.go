@@ -10,26 +10,18 @@ import (
 	"golang.org/x/net/html"
 )
 
-var (
-	visited map[string]bool = map[string]bool{}
-)
-
 func main() {
 	visitLink("https://google.com.br")
 }
 
 type VisitedLink struct {
 	Website     string    `bson:"website"`
-	Link        string    `bson:"linke"`
+	Link        string    `bson:"link"`
 	VisitedDate time.Time `bson:"visited_date"`
 }
 
 func visitLink(url string) {
-	if ok := visited[url]; ok {
-		return
-	}
-	visited[url] = true
-	fmt.Println(url)
+	fmt.Printf("visitando: %s\n", url)
 	res, err := http.Get(url)
 	if err != nil {
 		panic(err)
@@ -59,6 +51,11 @@ func extractLinks(node *html.Node) {
 			link, err := url.Parse(att.Val)
 
 			if err != nil || link.Scheme == "" {
+				continue
+			}
+
+			if db.VisitedLink(link.String()) {
+				fmt.Printf("Link ja visitado: %s", link)
 				continue
 			}
 
